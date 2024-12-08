@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Quiz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .quiz-container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .question {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        .option {
+            display: block;
+            margin: 10px 0;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1rem;
+            text-align: center;
+        }
+        .timer {
+            font-size: 1.2rem;
+            color: #ff5722;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="timer" id="timer">Time Left: 30s</div>
+        <div class="question" id="question">Loading question...</div>
+        <button class="option" id="option1" onclick="checkAnswer(1)">Option 1</button>
+        <button class="option" id="option2" onclick="checkAnswer(2)">Option 2</button>
+        <button class="option" id="option3" onclick="checkAnswer(3)">Option 3</button>
+        <button class="option" id="option4" onclick="checkAnswer(4)">Option 4</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "What does AI stand for?",
+                options: ["Artificial Intelligence", "Automatic Information", "Advanced Innovation", "Applied Integration"],
+                correct: 1
+            },
+            {
+                question: "What is the first step in the AI Project Cycle?",
+                options: ["Data Acquisition", "Problem Scoping", "Model Evaluation", "Deployment"],
+                correct: 2
+            },
+            {
+                question: "What is tokenization in NLP?",
+                options: ["Dividing text into smaller units like words or sentences", "Translating text to another language", "Compressing data", "Generating text automatically"],
+                correct: 1
+            }
+        ];
+
+        let currentQuestion = 0;
+        let timeLeft = 30;
+        let timer;
+
+        function loadQuestion() {
+            if (currentQuestion < questions.length) {
+                const question = questions[currentQuestion];
+                document.getElementById("question").textContent = question.question;
+                document.getElementById("option1").textContent = question.options[0];
+                document.getElementById("option2").textContent = question.options[1];
+                document.getElementById("option3").textContent = question.options[2];
+                document.getElementById("option4").textContent = question.options[3];
+                startTimer();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function checkAnswer(selectedOption) {
+            const question = questions[currentQuestion];
+            const resultElement = document.getElementById("result");
+            if (selectedOption === question.correct) {
+                resultElement.innerHTML = "Correct! 🎉";
+                resultElement.style.color = "green";
+            } else {
+                resultElement.innerHTML = `Wrong! ❌ The correct answer is ${question.options[question.correct - 1]}.`;
+                resultElement.style.color = "red";
+            }
+
+            clearTimeout(timer);
+            currentQuestion++;
+            setTimeout(() => {
+                resultElement.innerHTML = "";
+                loadQuestion();
+            }, 2000);
+        }
+
+        function startTimer() {
+            timeLeft = 30;
+            const timerElement = document.getElementById("timer");
+            timerElement.textContent = `Time Left: ${timeLeft}s`;
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = `Time Left: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById("result").innerHTML = "Time's up! Moving to the next question.";
+                    currentQuestion++;
+                    setTimeout(loadQuestion, 2000);
+                }
+            }, 1000);
+        }
+
+        function endQuiz() {
+            document.getElementById("question").textContent = "Quiz Completed!";
+            document.getElementById("timer").style.display = "none";
+            document.querySelectorAll(".option").forEach(option => option.style.display = "none");
+        }
+
+        // Start the quiz
+        loadQuestion();
+    </script>
+</body>
+</html>
